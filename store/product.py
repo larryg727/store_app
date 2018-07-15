@@ -10,6 +10,9 @@ class Product:
 
 
     def save(self):
+        '''
+        Saves instance of Product to DB and adds DB id to instance
+        '''
         db = utils.get_db_instance()
         cursor = db.cursor()
 
@@ -26,7 +29,10 @@ class Product:
 
         return self
 
-    def isPersisted(self):
+    def is_persisted(self):
+        '''
+        Method checks to see if DB id has been assinged to instance
+        '''
         if self.id is not None:
             return True
         else:
