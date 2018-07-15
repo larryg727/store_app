@@ -1,4 +1,5 @@
 from store import utils
+from store.product import Product
 
 
 def save_new_product(formData):
@@ -8,17 +9,9 @@ def save_new_product(formData):
     name = formData.get('name')
     description = formData.get('description')
     price = formData.get('price')
-    db = utils.get_db_instance()
-    cur = db.cursor()
-    query = f'INSERT INTO products (name, description, price) VALUES ("{name}", "{description}", "{price}");'
-    cur.execute(query)
-    last_id = cur.lastrowid
-    db.commit()
-
-    cur.close()
-    db.close()
-
-    return last_id
+    new_product = Product(name, description, price)
+    new_product.save()
+    return new_product.isPersisted()
 
 
 def get_all_products():
@@ -26,7 +19,7 @@ def get_all_products():
     Returns all products in DB
     '''
     db = utils.get_db_instance()
-    cur = db.cursor()
+    cur = db.cursor(dictionary=True)
     cur.execute(
         'SELECT name, description, price FROM products;')
     products = cur.fetchall()
