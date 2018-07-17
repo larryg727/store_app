@@ -9,9 +9,14 @@ def save_new_product(formData):
     name = formData.get('name')
     description = formData.get('description')
     price = formData.get('price')
+    category_id = formData.get('category')
     new_product = Product(name, description, price)
     new_product.save()
-    return new_product.is_persisted()
+    result = False
+    if new_product.is_persisted():
+        result = add_product_category(category_id, new_product.id)
+
+    return result
 
 
 def get_all_products():
@@ -62,3 +67,35 @@ def save_new_category(formData):
     db.close()
 
     return type(last_id) is int
+
+def all_by_category(category):
+    '''
+    Returns all products from db from category
+    '''
+    db = utils.get_db_instance()
+    cursor = db.cursor(dictionary=True)
+    query = f'SELECT * FROM products LEFT JOIN product_category ON products.id = product_category.product_id WHERE product_category.category_id = {category};'
+    cursor.execute(query)
+    products = cursor.fetchall()
+    
+    cursor.close()
+    db.close()
+    print(products)
+    return products
+
+def add_product_category(category_id, product_id):
+    '''
+    Saves product category in db
+    '''
+    db = utils.get_db_instance()
+    cursor = db.cursor()
+    query = f'INSERT INTO product_category (category_id, product_id) VALUES ({category_id}, {product_id});'
+    cursor.execute(query)
+    
+    last_id = cursor.lastrowid
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return type(last_id) is int
+    
