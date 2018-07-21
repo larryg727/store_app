@@ -12,4 +12,4 @@ This is a Python Flask restful API used to store and retrive data for frontend s
 5.  run application:
     `ENVIRONMENT=dev python run_app.py`
 
--   repostirory for front end of application can be found [here](https://github.com/larryg727/store-app-frontend)
+-   Repostirory for front end of application can be found [here](https://github.com/larryg727/store-app-frontend) \*
