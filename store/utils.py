@@ -1,5 +1,4 @@
 import mysql.connector
-import os
 from config import Config
 
 def get_db_instance():

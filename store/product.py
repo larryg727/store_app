@@ -1,13 +1,16 @@
 from store import utils
 
+
 class Product:
 
-    def __init__(self, name, description, price):
+    def __init__(self, name, description, price, details, category_id, subcategory_id):
         self.name = name
         self.description = description
         self.price = price
+        self.details = details
+        self.category_id = category_id
+        self.subcategory_id = subcategory_id
         self.id = None
-
 
     def save(self):
         '''
@@ -16,7 +19,7 @@ class Product:
         db = utils.get_db_instance()
         cursor = db.cursor()
 
-        query = f'INSERT INTO products (name, description, price) VALUES ("{self.name}", "{self.description}", "{self.price}");'
+        query = f'INSERT INTO products (name, description, details, price, category_id, subcategory_id) VALUES ("{self.name}", "{self.description}", "{self.details}", {self.price}, {self.category_id}, {self.subcategory_id});'
         cursor.execute(query)
 
         last_id = cursor.lastrowid

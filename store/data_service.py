@@ -9,14 +9,16 @@ def save_new_product(formData):
     name = formData.get('name')
     description = formData.get('description')
     price = formData.get('price')
-    category_id = formData.get('category')
-    new_product = Product(name, description, price)
+    details = formData.get('details')
+    category_id = formData.get('category') if formData.get(
+        'category') != '' else 'NULL'
+    subcategory_id = formData.get('subcategory') if formData.get(
+        'subcategory') != '' else 'NULL'
+    new_product = Product(name, description, price,
+                          details, category_id, subcategory_id)
     new_product.save()
-    result = False
-    if new_product.is_persisted():
-        result = add_product_category(category_id, new_product.id)
 
-    return result
+    return new_product.is_persisted()
 
 
 def get_all_products():
@@ -42,13 +44,14 @@ def get_all_categories():
     db = utils.get_db_instance()
     cur = db.cursor(dictionary=True)
     cur.execute(
-        'SELECT * FROM category;')
+        'SELECT * FROM categories;')
     categories = cur.fetchall()
 
     cur.close()
     db.close()
 
     return categories
+
 
 def save_new_category(formData):
     '''
@@ -58,7 +61,7 @@ def save_new_category(formData):
 
     db = utils.get_db_instance()
     cursor = db.cursor()
-    query = f'INSERT INTO category (name) VALUES ("{name}");'
+    query = f'INSERT INTO categories (name) VALUES ("{name}");'
     cursor.execute(query)
 
     last_id = cursor.lastrowid
@@ -66,7 +69,11 @@ def save_new_category(formData):
     cursor.close()
     db.close()
 
-    return type(last_id) is int
+    if type(last_id) is int:
+        return last_id
+    else:
+        return False
+
 
 def all_by_category(category):
     '''
@@ -74,28 +81,51 @@ def all_by_category(category):
     '''
     db = utils.get_db_instance()
     cursor = db.cursor(dictionary=True)
-    query = f'SELECT * FROM products LEFT JOIN product_category ON products.id = product_category.product_id WHERE product_category.category_id = {category};'
+    # query = f'SELECT * FROM products LEFT JOIN categories ON products.id = categories.id WHERE products.category_id = {category};'
+    query = f'SELECT products.name as name, products.description, products.details, products.price, subcategories.name as subcategory FROM products LEFT JOIN subcategories ON products.subcategory_id = subcategories.id WHERE products.category_id = {category};'
     cursor.execute(query)
     products = cursor.fetchall()
-    
+
     cursor.close()
     db.close()
-    print(products)
+    
     return products
 
-def add_product_category(category_id, product_id):
+
+def save_new_subcategory(formData):
     '''
-    Saves product category in db
+    Takes in form data and saves new category
     '''
+    name = formData.get('name')
+    category_id = formData.get('category')
+
     db = utils.get_db_instance()
     cursor = db.cursor()
-    query = f'INSERT INTO product_category (category_id, product_id) VALUES ({category_id}, {product_id});'
+    query = f'INSERT INTO subcategories (name, category_id) VALUES ("{name}", {category_id});'
     cursor.execute(query)
-    
+
     last_id = cursor.lastrowid
     db.commit()
     cursor.close()
     db.close()
 
-    return type(last_id) is int
-    
+    if type(last_id) is int:
+        return last_id
+    else:
+        return False
+
+
+def get_all_subcategories():
+    '''
+    Returns all categories in DB
+    '''
+    db = utils.get_db_instance()
+    cur = db.cursor(dictionary=True)
+    cur.execute(
+        'SELECT * FROM subcategories;')
+    subcategories = cur.fetchall()
+
+    cur.close()
+    db.close()
+
+    return subcategories

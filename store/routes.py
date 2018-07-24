@@ -22,7 +22,8 @@ def get_products():
     '''
     products = data_service.get_all_products()
     categories = data_service.get_all_categories()
-    json = {'products': products, 'categories': categories}
+    subcategories = data_service.get_all_subcategories()
+    json = {'products': products, 'categories': categories, 'subcategories': subcategories}
     return jsonify(json), 200
 
 
@@ -45,6 +46,7 @@ def create_category():
     json = {'result': str(result)}
     return jsonify(json), 200
 
+
 @app.route('/api/products/<category>')
 def get_products_by_category(category):
     '''
@@ -52,4 +54,14 @@ def get_products_by_category(category):
     '''
     products = data_service.all_by_category(category)
     json = {'products': products}
+    return jsonify(json), 200
+
+
+@app.route('/api/add/subcategory', methods=['POST'])
+def create_subcategory():
+    '''
+    Creates new subcategory
+    '''
+    result = data_service.save_new_subcategory(request.form)
+    json = {'result': str(result)}
     return jsonify(json), 200
