@@ -23,7 +23,18 @@ def get_products():
     products = data_service.get_all_products()
     categories = data_service.get_all_categories()
     subcategories = data_service.get_all_subcategories()
-    json = {'products': products, 'categories': categories, 'subcategories': subcategories}
+    json = {'products': products, 'categories': categories,
+            'subcategories': subcategories}
+    return jsonify(json), 200
+
+
+@app.route('/api/update/product/<product_id>', methods=['POST'])
+def update_product(product_id):
+    '''
+    updates product by id
+    '''
+    result = data_service.update_product(request.form, product_id)
+    json = {'result': str(result)}
     return jsonify(json), 200
 
 

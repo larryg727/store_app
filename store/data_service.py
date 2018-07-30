@@ -37,6 +37,25 @@ def get_all_products():
     return products
 
 
+def update_product(formData, product_id):
+    '''
+    Updates product in db
+    '''
+    name = formData.get('name')
+    description = formData.get('description')
+    price = formData.get('price')
+    details = formData.get('details')
+    category_id = formData.get('category') if formData.get(
+        'category') != '' else 'NULL'
+    subcategory_id = formData.get('subcategory') if formData.get(
+        'subcategory') != '' else 'NULL'
+    product = Product(name, description, price,
+                          details, category_id, subcategory_id)
+    product.update_product(product_id)
+
+    return True
+
+
 def get_all_categories():
     '''
     Returns all categories in DB
@@ -129,3 +148,22 @@ def get_all_subcategories():
     db.close()
 
     return subcategories
+
+
+def save_to_db(query):
+    '''
+    Generic method to save to db by query
+    '''
+    db = utils.get_db_instance()
+    cursor = db.cursor()
+    cursor.execute(query)
+
+    last_id = cursor.lastrowid
+    db.commit()
+    cursor.close()
+    db.close()
+
+    if type(last_id) is int:
+        return last_id
+    else:
+        return False
